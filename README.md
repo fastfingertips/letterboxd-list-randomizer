@@ -7,6 +7,9 @@
 
 A simple web application to pick a random movie from Letterboxd lists.
 
+> [!IMPORTANT]
+> This repository is maintained as a boilerplate/draft. Most requests may fail during web scraping operations. While it works occasionally, it is not consistently stable, likely due to Cloudflare protection, and further optimization has not been prioritized.
+
 
 ## Local Development
 
