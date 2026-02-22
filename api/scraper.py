@@ -5,12 +5,21 @@ from letterboxdpy.core.scraper import parse_url
 from letterboxdpy.utils.utils_url import get_page_url
 from letterboxdpy.utils.movies_extractor import extract_movies_from_vertical_list
 
+try:
+    from .utils import progress_step
+except ImportError:
+    from utils import progress_step
+
+
+@progress_step("Fetching List Metadata")
 def get_list_metadata(user, slug):
     """Returns (lb_instance, title, count) using total library structure"""
     lb = LBList(user, slug)
     return lb, lb.title, lb.get_count()
 
+@progress_step("Scraping Random Page & Movie")
 def get_random_from_instance(lb, count):
+
     """
     Picks a random movie from an existing LBList instance.
     Uses library's Movie object for rich data.

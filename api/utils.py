@@ -1,4 +1,24 @@
-import re, json
+import re, json, time
+from functools import wraps
+
+def progress_step(name):
+    """Decorator to log and time specific backend operations"""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start = time.time()
+            print(f"DEBUG: Starting step -> {name}")
+            try:
+                result = func(*args, **kwargs)
+                duration = time.time() - start
+                print(f"DEBUG: Finished step -> {name} ({duration:.2f}s)")
+                return result
+            except Exception as e:
+                print(f"DEBUG: FAILED step -> {name} - Error: {str(e)}")
+                raise e
+        return wrapper
+    return decorator
+
 
 def extract_info(val):
     val = val.strip().lower()
