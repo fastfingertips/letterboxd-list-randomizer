@@ -5,13 +5,7 @@
 ![Vercel](https://img.shields.io/badge/vercel-deployed-black?style=flat-square&logo=vercel)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 
-A dynamic web application to pick a random movie from Letterboxd lists with real-time progress tracking.
-
-
-## Features
-- **Honest Progress:** Transparent loading states synchronized with backend operations.
-- **Granular API:** Segmented fetching (Metadata -> Selection -> Details) for a better UX.
-- **Mobile Friendly:** Optimized for both desktop and mobile viewing.
+A simple web application to pick a random movie from Letterboxd lists.
 
 ## Tech Stack
 - **Backend:** Flask (Python) + Letterboxdpy
