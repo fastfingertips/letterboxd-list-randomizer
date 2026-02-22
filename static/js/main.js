@@ -188,7 +188,19 @@ export const performRandomize = async (urls) => {
                 
                 // Show stars/rating if available
                 if (data.movie.rating) {
-                    elements.resStars.innerHTML = `<span style="font-size: 14px; opacity: 0.7;">★</span> ${data.movie.rating} <small style="font-size: 10px; opacity: 0.4;">/ 5</small>`;
+                    const rating = parseFloat(data.movie.rating);
+                    let starsHtml = '';
+                    for (let i = 1; i <= 5; i++) {
+                        if (rating >= i) {
+                            starsHtml += '<i data-lucide="star" class="star-full"></i>';
+                        } else if (rating >= i - 0.5) {
+                            starsHtml += '<i data-lucide="star-half" class="star-half"></i>';
+                        } else {
+                            starsHtml += '<i data-lucide="star" style="opacity: 0.2;"></i>';
+                        }
+                    }
+                    elements.resStars.innerHTML = `${starsHtml} <span class="result-rating-num">${rating.toFixed(2)}</span>`;
+                    if (window.lucide) window.lucide.createIcons();
                     elements.resStars.classList.remove('is-hidden');
                 } else {
                     elements.resStars.classList.add('is-hidden');

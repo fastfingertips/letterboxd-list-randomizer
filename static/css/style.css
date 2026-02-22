@@ -198,11 +198,18 @@
         .result-meta { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 12px; }
         
         .result-stars {
+            display: flex;
+            align-items: center;
+            gap: 4px;
             color: #00e054;
-            letter-spacing: 0.1em;
-            font-size: 18px;
-            margin-bottom: 0;
+            margin-bottom: 4px;
         }
+        .result-stars svg { width: 14px; height: 14px; }
+        .result-stars svg.star-full { fill: currentColor; }
+        .result-stars svg.star-half { fill: none; } /* Lucide's half-star has its own internal fill/path */
+        .result-rating-num { font-size: 13px; font-weight: 700; color: #fff; margin-left: 4px; opacity: 0.9; }
+
+
 
         @media (max-width: 480px) {
             .result-hero { flex-direction: column; text-align: center; gap: 16px; }
