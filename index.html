@@ -64,10 +64,12 @@
                             </div>
                         </div>
                         
-                        <div class="result-stats" id="result-stats">
+                        <div class="result-stats">
                             <i data-lucide="info" style="width: 12px; height: 12px; opacity: 0.5;"></i>
-                            Chosen from <span id="stat-pool">0</span> movies 
-                            (<span id="stat-prob">0</span>% chance)
+                            <span>Chosen from <span id="stat-pool">0</span> movies (<span id="stat-prob">0</span>%)</span>
+                            <button class="stats-trigger" id="stats-btn" title="View Technical Stats">
+                                <i data-lucide="terminal"></i>
+                            </button>
                         </div>
 
                         <div style="display: grid; gap: 8px;">
@@ -149,7 +151,22 @@
         <div style="margin-top: 12px; font-size: 10px; opacity: 0.4; text-transform: uppercase; letter-spacing: 0.1em;">Powered by letterboxdpy</div>
     </footer>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Technical Stats Modal -->
+    <div id="stats-modal" class="modal-overlay is-hidden">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Technical Logs</h2>
+                <button class="btn-link" id="close-stats-btn">Close</button>
+            </div>
+            <div class="stats-body">
+                <pre class="stats-json" id="stats-json"></pre>
+                <button class="action-btn action-btn--secondary" id="copy-stats-btn" style="width: 100%; margin-top: 16px;">
+                    <i data-lucide="copy" style="width: 14px; margin-right: 4px;"></i> Copy Technical Logs
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="/static/js/main.js"></script>
 </body>
 </html>

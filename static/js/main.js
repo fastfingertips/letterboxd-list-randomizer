@@ -112,6 +112,32 @@ elements.infoModal.addEventListener('click', (e) => {
 $('clear-history').addEventListener('click', () => { clearHistory(); updateUI(); });
 $('clear-lists').addEventListener('click', () => { clearRecentLists(); updateUI(); });
 
+// Technical Stats Modal Listeners
+elements.statsBtn.addEventListener('click', () => {
+    if (window.lastResultData) {
+        elements.statsJson.textContent = JSON.stringify(window.lastResultData, null, 2);
+        setView('stats');
+    }
+});
+
+$('close-stats-btn').addEventListener('click', () => setView('result'));
+elements.statsModal.addEventListener('click', (e) => { 
+    if(e.target === elements.statsModal) setView('result'); 
+});
+
+elements.copyStatsBtn.addEventListener('click', () => {
+    const text = elements.statsJson.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        const originalText = elements.copyStatsBtn.innerHTML;
+        elements.copyStatsBtn.innerHTML = '<i data-lucide="check"></i> Copied!';
+        if (window.lucide) window.lucide.createIcons();
+        setTimeout(() => {
+            elements.copyStatsBtn.innerHTML = originalText;
+            if (window.lucide) window.lucide.createIcons();
+        }, 2000);
+    });
+});
+
 // Reset state when typing
 $('randomize-form').addEventListener('input', () => {
     updateUI();
@@ -218,6 +244,14 @@ export const performRandomize = async (urls) => {
                 // Show statistics
                 elements.statPool.textContent = data.stats.total_pool.toLocaleString();
                 elements.statProb.textContent = data.stats.probability;
+
+                // Technical Logs Cache
+                window.lastResultData = {
+                    movie: data.movie.name,
+                    slug: data.movie.slug,
+                    rating: data.movie.rating,
+                    stats: data.stats
+                };
 
                 setView('result');
                 

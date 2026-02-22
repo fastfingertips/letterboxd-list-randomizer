@@ -15,16 +15,22 @@ export const elements = {
     resLink: $('result-link'),
     statPool: $('stat-pool'),
     statProb: $('stat-prob'),
+    statsModal: $('stats-modal'),
+    statsBtn: $('stats-btn'),
+    statsJson: $('stats-json'),
+    copyStatsBtn: $('copy-stats-btn'),
     error: $('error-msg'),
     errorText: $('error-text')
 };
 
 export const setView = (view) => {
     elements.infoModal.classList.toggle('is-hidden', view !== 'info');
+    elements.statsModal.classList.toggle('is-hidden', view !== 'stats');
     elements.formArea.classList.toggle('is-hidden', view !== 'form');
     elements.loadingArea.classList.toggle('is-hidden', view !== 'loading');
     elements.resultArea.classList.toggle('is-hidden', view !== 'result');
 };
+
 
 export const showError = (msg) => {
     elements.errorText.textContent = msg;
