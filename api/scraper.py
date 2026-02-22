@@ -8,8 +8,9 @@ from letterboxdpy.pages.movie_profile import MovieProfile
 from letterboxdpy.utils.movies_extractor import extract_movies_from_vertical_list
 from letterboxdpy.utils.utils_url import get_page_url
 
-from constants import MOVIES_PER_PAGE
-from utils import progress_step
+from .constants import MOVIES_PER_PAGE
+from .utils import progress_step
+
 
 
 @progress_step("Fetching List Metadata")

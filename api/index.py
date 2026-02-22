@@ -3,13 +3,14 @@ import traceback
 
 from flask import Flask, jsonify, request
 
-from constants import PORT, ROOT_DIR
-from scraper import (
+from .constants import PORT, ROOT_DIR
+from .scraper import (
     get_list_metadata,
     get_movie_details,
     get_random_movie_meta,
 )
-from utils import extract_info, get_error_msg
+from .utils import extract_info, get_error_msg
+
 
 
 
