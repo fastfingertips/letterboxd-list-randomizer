@@ -2,5 +2,5 @@ flask==2.3.3
 letterboxdpy==6.4.1
 beautifulsoup4==4.12.3
 requests==2.31.0
-curl-cffi==0.5.10
+curl-cffi==0.14.0
 lxml==5.1.0
