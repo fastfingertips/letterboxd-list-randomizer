@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lora:wght@700&display=swap" rel="stylesheet" />
+    <title>Letterboxd Movie Roulette</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+    <div class="page-container">
+        <div class="card">
+            <div class="toast" id="error-msg">
+                <i data-lucide="alert-circle"></i>
+                <span id="error-text"></span>
+            </div>
+            <header class="hero">
+                <h1 class="hero__title">Movie Roulette</h1>
+                <p class="hero__desc">Paste one or more lists. Fate handles the rest.</p>
+                <button class="info-toggle" id="info-btn" title="How it works">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </button>
+            </header>
+
+            <div class="main-content">
+                <div id="main-area">
+                    <div id="form-panel">
+                        <form id="randomize-form">
+                            <div id="url-fields">
+                                <div class="field">
+                                    <div class="field__number">1</div>
+                                    <div class="field__row">
+                                        <input class="field__input" type="text" id="url-1" placeholder="Paste your list URL here…" />
+                                        <button type="button" class="field__remove" id="remove-url-1" title="Remove"><i data-lucide="trash-2"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="add-field-trigger" id="add-url-btn">
+                                <i data-lucide="plus"></i> Add another list
+                            </button>
+                            <button type="submit" class="action-btn" style="margin-top: 32px;">Spin the wheel</button>
+                        </form>
+                    </div>
+
+                    <div id="loading-panel" class="is-hidden loading-view">
+                        <div class="loading-slot" id="slot-text">FETCHING DATA</div>
+                        <div class="loading-container">
+                            <div class="loading-fill" id="bar-fill"></div>
+                        </div>
+                    </div>
+
+                    <div id="result-panel" class="is-hidden result-view">
+                        <h2 class="result-title" id="result-movie"></h2>
+                        <p class="result-meta" id="result-meta"></p>
+                        <div style="display: grid; gap: 8px;">
+                            <a class="action-btn" id="result-link" target="_blank" rel="noopener">Open Letterboxd</a>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="action-btn action-btn--secondary" id="back-btn" style="flex: 1;">New Selection</button>
+                                <button class="action-btn action-btn--secondary" id="try-again-btn" style="flex: 1;">Spin Again</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-grid is-hidden" id="history-grid">
+                <section class="history-section is-hidden" id="recent-lists-section">
+                    <div class="history-header">
+                        <span class="history-label">Recent Lists</span>
+                        <button class="btn-link" id="clear-lists">Clear</button>
+                    </div>
+                    <div class="history-list" id="recent-lists-list"></div>
+                </section>
+
+                <section class="history-section is-hidden" id="history-section">
+                    <div class="history-header">
+                        <span class="history-label">Last 4 Activity</span>
+                        <button class="btn-link" id="clear-history">Clear</button>
+                    </div>
+                    <div class="history-list" id="history-list"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- How it Works Popup -->
+    <div id="info-modal" class="modal-overlay is-hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">How it Works</h2>
+                <button class="btn-link" id="close-modal-btn">Close</button>
+            </div>
+            <div class="workflow">
+                <div class="workflow-step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <h4>Input Lists</h4>
+                        <p>Paste one or more public Letterboxd list URLs. You can combine up to 5 different lists.</p>
+                    </div>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <h4>Smart Selection</h4>
+                        <p>Our optimized engine picks a random page and film instantly. This keeps things lightning-fast, even for lists with 5,000+ movies.</p>
+                    </div>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <h4>Quick Shortcuts</h4>
+                        <p>You can bypass the UI by adding <code>?url=your-list-slug</code> to the browsers address bar for instant spins.</p>
+                    </div>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        <h4>Local History</h4>
+                        <p>Your recent choices are saved locally on your device. We never store your data on our servers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="credits">
+        <div>Developed by <a href="https://github.com/fastfingertips" target="_blank" style="color: inherit; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1); transition: 0.2s;">FastFingertips</a></div>
+        <div style="margin-top: 4px;">
+            <a href="https://github.com/fastfingertips/movieroulette" target="_blank" style="color: inherit; text-decoration: none; opacity: 0.6; transition: 0.2s;">view source on github</a>
+        </div>
+        <div style="margin-top: 12px; font-size: 10px; opacity: 0.4; text-transform: uppercase; letter-spacing: 0.1em;">Powered by letterboxdpy</div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>
