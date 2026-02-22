@@ -357,3 +357,7 @@ const checkUrlParams = () => {
 };
 
 checkUrlParams();
+
+// Initial icon render
+if (window.lucide) window.lucide.createIcons();
+
