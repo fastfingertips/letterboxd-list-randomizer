@@ -285,7 +285,7 @@ export const performRandomize = async (urls) => {
                 elements.slot.textContent = 'RETRYING...';
                 elements.slot.style.color = '#ff9500'; // Amber alert color
                 
-                await new Promise(r => setTimeout(r, 1200));
+                await new Promise(r => setTimeout(r, 500));
                 
                 elements.slot.style.color = ''; // Reset color
                 elements.slot.textContent = originalText;
