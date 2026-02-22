@@ -1,9 +1,17 @@
-import os, random
-from flask import Flask, request, jsonify
+import os
+import random
 
+from flask import Flask, jsonify, request
+
+from constants import DEFAULT_ENGINE, PORT, ROOT_DIR, SERVER_TYPE
+from scraper import (
+    get_list_metadata,
+    get_movie_details,
+    get_random_from_instance,
+    get_random_movie_meta,
+)
 from utils import extract_info, get_error_msg
-from scraper import get_list_metadata, get_random_from_instance, get_random_movie_meta, get_movie_details
-from constants import ROOT_DIR, PORT, DEFAULT_ENGINE, SERVER_TYPE
+
 
 app = Flask(__name__, static_folder=ROOT_DIR, static_url_path='')
 

@@ -1,5 +1,8 @@
-import re, json, time
+import json
+import re
+import time
 from functools import wraps
+
 
 def progress_step(name):
     """Decorator to log and time specific backend operations"""

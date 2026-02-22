@@ -1,13 +1,16 @@
-import random, math
+import math
+import random
+
+from letterboxdpy.constants.project import DOMAIN
+from letterboxdpy.core.scraper import parse_url
 from letterboxdpy.list import List as LBList
 from letterboxdpy.pages.movie_profile import MovieProfile
-from letterboxdpy.core.scraper import parse_url
-from letterboxdpy.utils.utils_url import get_page_url
 from letterboxdpy.utils.movies_extractor import extract_movies_from_vertical_list
-from letterboxdpy.constants.project import DOMAIN
+from letterboxdpy.utils.utils_url import get_page_url
 
-from utils import progress_step
 from constants import MOVIES_PER_PAGE
+from utils import progress_step
+
 
 
 @progress_step("Fetching List Metadata")
