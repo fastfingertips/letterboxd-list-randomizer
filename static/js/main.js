@@ -4,15 +4,8 @@ import { renderHistory, renderResult } from './modules/ui.js';
 import { saveHistory, saveRecentLists, clearHistory, clearRecentLists } from './modules/storage.js';
 import { addField, renumberFields, getUrlCount, setUrlCount } from './modules/fields.js';
 import { checkUrlParams } from './modules/utils.js';
+import { CONFIG } from './constants.js';
 
-// --- Loading Animation State ---
-const loadingMessages = [
-    "CONNECTING TO LETTERBOXD",
-    "FETCHING LIST METADATA",
-    "SELECTING RANDOM MOVIE FROM LIST",
-    "FETCHING FILM DETAILS (POSTER & RATING)",
-    "FINALIZING CANDIDATE"
-];
 let bgIntervals = { slot: null, prg: null };
 let currentUrlsForRetry = [];
 
@@ -38,7 +31,7 @@ const handleUseList = (url) => {
         const emptyInput = inputs.find(i => i.value === '');
         if (emptyInput) {
             emptyInput.value = url;
-        } else if (getUrlCount() < 5) {
+        } else if (getUrlCount() < CONFIG.MAX_URLS) {
             addField(updateUI, url);
         } else {
             inputs[0].value = url;
@@ -61,31 +54,31 @@ export const performRandomize = async (urls) => {
     setView('loading');
     
     let p = 0; let msgIdx = 0;
-    elements.slot.textContent = loadingMessages[0];
+    elements.slot.textContent = CONFIG.LOADING_MESSAGES[0];
     
     bgIntervals.slot = setInterval(() => {
-        if (msgIdx < loadingMessages.length - 1) {
+        if (msgIdx < CONFIG.LOADING_MESSAGES.length - 1) {
             msgIdx++;
-            elements.slot.textContent = loadingMessages[msgIdx];
+            elements.slot.textContent = CONFIG.LOADING_MESSAGES[msgIdx];
         }
-    }, 800);
+    }, CONFIG.ANIMATION.SLOT_INTERVAL_MS);
 
     bgIntervals.prg = setInterval(() => {
         if (p < 90) elements.bar.style.width = `${p += (100 - p) * 0.05}%`;
         else clearInterval(bgIntervals.prg);
-    }, 100);
+    }, CONFIG.ANIMATION.PROGRESS_INTERVAL_MS);
 
-    const maxRetries = 2;
     let attempts = 0;
 
     try {
-        while (attempts <= maxRetries) {
+        while (attempts <= CONFIG.MAX_RETRIES) {
             try {
-                const res = await fetch('/api', { 
+                const res = await fetch(CONFIG.API_ENDPOINT, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
                     body: JSON.stringify({ urls }) 
                 });
+
 
                 let data;
                 if (res.headers.get("content-type")?.includes("application/json")) {
@@ -111,7 +104,7 @@ export const performRandomize = async (urls) => {
                 return;
 
             } catch (err) {
-                if (err.userFacing || attempts >= maxRetries) {
+                if (err.userFacing || attempts >= CONFIG.MAX_RETRIES) {
                     clearInterval(bgIntervals.slot);
                     clearInterval(bgIntervals.prg);
                     setView('form');
@@ -122,13 +115,18 @@ export const performRandomize = async (urls) => {
                 const originalText = elements.slot.textContent;
                 elements.slot.textContent = 'RETRYING...';
                 elements.slot.style.color = '#ff9500';
-                await new Promise(r => setTimeout(r, 500));
+                await new Promise(r => setTimeout(r, CONFIG.RETRY_DELAY_MS));
                 elements.slot.style.color = '';
                 elements.slot.textContent = originalText;
             }
         }
+    } catch (err) {
+        console.error('[FATAL]', err);
+        showError('A fatal error occurred.');
     } finally {
+
         submitBtn.disabled = false;
+
         submitBtn.textContent = 'Spin the wheel';
         resultBtns.forEach(btn => { btn.style.pointerEvents = 'auto'; btn.style.opacity = '1'; });
     }

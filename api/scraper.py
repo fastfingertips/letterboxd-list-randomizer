@@ -7,8 +7,11 @@ from letterboxdpy.utils.movies_extractor import extract_movies_from_vertical_lis
 
 try:
     from .utils import progress_step
+    from .constants import MOVIES_PER_PAGE
 except ImportError:
     from utils import progress_step
+    from constants import MOVIES_PER_PAGE
+
 
 @progress_step("Fetching List Metadata")
 def get_list_metadata(user, slug):
@@ -19,7 +22,8 @@ def get_list_metadata(user, slug):
 @progress_step("Selecting Random Movie from List")
 def get_random_movie_meta(lb, count):
     """Fetches a random page from list and picks a movie slug"""
-    total_pages = math.ceil(count / 100)
+    total_pages = math.ceil(count / MOVIES_PER_PAGE)
+
     random_page = random.randint(1, total_pages)
     page_dom = parse_url(get_page_url(lb.url, random_page))
     

@@ -6,15 +6,15 @@ import random, os
 try:
     from .utils import extract_info, get_error_msg
     from .scraper import get_list_metadata, get_random_from_instance
+    from .constants import ROOT_DIR, PORT, DEFAULT_ENGINE, SERVER_TYPE
 except ImportError:
     from utils import extract_info, get_error_msg
     from scraper import get_list_metadata, get_random_from_instance
-
-# Absolute path to the folder containing index.html (the project root)
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    from constants import ROOT_DIR, PORT, DEFAULT_ENGINE, SERVER_TYPE
 
 # Initialize Flask with the project root as the static folder
 app = Flask(__name__, static_folder=ROOT_DIR, static_url_path='')
+
 
 @app.route('/')
 def index():
@@ -78,8 +78,8 @@ def randomize():
                     "selection": f"{select_duration:.2f}s",
                     "total": f"{total_duration:.2f}s"
                 },
-                "server": "Vercel/Flask",
-                "engine": "letterboxdpy-granular"
+                "server": SERVER_TYPE,
+                "engine": DEFAULT_ENGINE
             }
         })
     except Exception as e:
@@ -88,5 +88,4 @@ def randomize():
 
 if __name__ == "__main__":
     print(f"🚀 Starting server from: {ROOT_DIR}")
-    # Using port 5050 to avoid any potential port 5000 conflicts
-    app.run(port=5050, debug=True)
+    app.run(port=PORT, debug=True)

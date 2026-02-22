@@ -1,7 +1,9 @@
 import { $, elements } from './dom.js';
 import { createUrlField } from '../components/UrlField.js';
+import { CONFIG } from '../constants.js';
 
 let urlCount = 1;
+
 
 export const setUrlCount = (val) => { urlCount = val; };
 export const getUrlCount = () => urlCount;
@@ -19,11 +21,12 @@ export const renumberFields = () => {
             input.placeholder = "(Optional) Another list URL…";
         }
     });
-    $('add-url-btn').classList.toggle('is-hidden', urlCount >= 5);
+    $('add-url-btn').classList.toggle('is-hidden', urlCount >= CONFIG.MAX_URLS);
 };
 
 export const addField = (callback, value = '') => {
-    if (urlCount >= 5) return null;
+    if (urlCount >= CONFIG.MAX_URLS) return null;
+
     const div = createUrlField(urlCount + 1, value);
     $('url-fields').appendChild(div);
     urlCount++;
