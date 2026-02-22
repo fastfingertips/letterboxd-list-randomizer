@@ -47,86 +47,85 @@ export const performRandomize = async (urls) => {
     const submitBtn = elements.formArea.querySelector('button[type="submit"]');
     const resultBtns = elements.resultArea.querySelectorAll('.action-btn');
     
+    // UI Loading state
     submitBtn.disabled = true;
     submitBtn.textContent = 'Processing...';
     resultBtns.forEach(btn => { btn.style.pointerEvents = 'none'; btn.style.opacity = '0.5'; });
     elements.bar.style.width = '0%';
     setView('loading');
     
-    let p = 0; let msgIdx = 0;
-    elements.slot.textContent = CONFIG.LOADING_MESSAGES[0];
-    
-    bgIntervals.slot = setInterval(() => {
-        if (msgIdx < CONFIG.LOADING_MESSAGES.length - 1) {
-            msgIdx++;
-            elements.slot.textContent = CONFIG.LOADING_MESSAGES[msgIdx];
-        }
-    }, CONFIG.ANIMATION.SLOT_INTERVAL_MS);
-
+    let p = 0;
     bgIntervals.prg = setInterval(() => {
-        if (p < 90) elements.bar.style.width = `${p += (100 - p) * 0.05}%`;
+        if (p < 95) elements.bar.style.width = `${p += (100 - p) * 0.05}%`;
         else clearInterval(bgIntervals.prg);
     }, CONFIG.ANIMATION.PROGRESS_INTERVAL_MS);
 
-    let attempts = 0;
-
     try {
-        while (attempts <= CONFIG.MAX_RETRIES) {
-            try {
-                const res = await fetch(CONFIG.API_ENDPOINT, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ urls }) 
-                });
+        const startTime = Date.now();
 
+        // 1. Fetch Metadata (Honest Progress)
+        elements.slot.textContent = CONFIG.LOADING_MESSAGES[1];
+        const metaRes = await fetch('/api/metadata', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ urls }) 
+        });
+        const metaData = await metaRes.json();
+        if (!metaRes.ok) throw { userFacing: true, message: metaData.error || 'Metadata failed' };
+        
+        // 2. Selection (Honest Progress)
+        elements.slot.textContent = CONFIG.LOADING_MESSAGES[2];
+        const selectRes = await fetch('/api/select', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lists: metaData.lists, total: metaData.total })
+        });
+        const selectData = await selectRes.json();
+        if (!selectRes.ok) throw { userFacing: true, message: selectData.error || 'Selection failed' };
+        
+        // 3. Details (Honest Progress)
+        elements.slot.textContent = CONFIG.LOADING_MESSAGES[3];
+        const detailRes = await fetch('/api/details', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: selectData.meta.slug })
+        });
+        const detailData = await detailRes.json();
+        if (!detailRes.ok) throw { userFacing: true, message: detailData.error || 'Details failed' };
 
-                let data;
-                if (res.headers.get("content-type")?.includes("application/json")) {
-                    data = await res.json();
-                    if (!res.ok) throw { userFacing: res.status < 500, message: data.error || 'Request failed' };
-                } else {
-                    throw { userFacing: false, message: `Server error: ${res.status === 504 ? 'Timeout' : res.status}` };
-                }
-                
-                clearInterval(bgIntervals.slot);
-                clearInterval(bgIntervals.prg);
+        // 4. Finalizing
+        elements.slot.textContent = CONFIG.LOADING_MESSAGES[4];
+        clearInterval(bgIntervals.prg);
+        elements.bar.style.width = '100%';
+        await new Promise(r => setTimeout(r, 400));
 
-                elements.bar.style.width = '100%';
-                await new Promise(r => setTimeout(r, 400));
+        // Assemble final data for rendering
+        const totalDuration = (Date.now() - startTime) / 1000;
+        const probability = (1 / metaData.total) * 100;
 
-                renderResult(data);
-                setView('result');
-                
-                saveHistory(data);
-
-                saveRecentLists(urls);
-                updateUI();
-                return;
-
-            } catch (err) {
-                if (err.userFacing || attempts >= CONFIG.MAX_RETRIES) {
-                    clearInterval(bgIntervals.slot);
-                    clearInterval(bgIntervals.prg);
-                    setView('form');
-                    showError(err.message || 'Connection unstable');
-                    break;
-                }
-                attempts++;
-                const originalText = elements.slot.textContent;
-                elements.slot.textContent = 'RETRYING...';
-                elements.slot.style.color = '#ff9500';
-                await new Promise(r => setTimeout(r, CONFIG.RETRY_DELAY_MS));
-                elements.slot.style.color = '';
-                elements.slot.textContent = originalText;
+        const finalData = {
+            movie: detailData.movie,
+            list: selectData.list,
+            stats: {
+                total_pool: metaData.total,
+                probability: probability < 0.01 ? probability.toFixed(4) : probability.toFixed(2),
+                timing: { total: `${totalDuration.toFixed(2)}s` }
             }
-        }
+        };
+
+        renderResult(finalData);
+        setView('result');
+        saveHistory(finalData);
+        saveRecentLists(urls);
+        updateUI();
+
     } catch (err) {
+        clearInterval(bgIntervals.prg);
+        setView('form');
+        showError(err.message || 'Processing failed');
         console.error('[FATAL]', err);
-        showError('A fatal error occurred.');
     } finally {
-
         submitBtn.disabled = false;
-
         submitBtn.textContent = 'Spin the wheel';
         resultBtns.forEach(btn => { btn.style.pointerEvents = 'auto'; btn.style.opacity = '1'; });
     }
