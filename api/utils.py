@@ -56,7 +56,12 @@ def extract_info(val):
 def get_error_msg(e):
     msg = str(e)
     try:
-        # letterboxdpy throws JSON-structured errors, extract clean message
-        return json.loads(msg.split("\n")[0]).get("message", msg)
+        # Check if the message itself is a JSON string
+        data = json.loads(msg)
+        return data.get("message", msg)
     except Exception:
-        return msg
+        try:
+            # letterboxdpy sometimes throws JSON-structured errors in the first line
+            return json.loads(msg.split("\n")[0]).get("message", msg)
+        except Exception:
+            return msg

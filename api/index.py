@@ -30,14 +30,21 @@ def api_metadata():
 
         list_data = []
         for url in urls:
-            user, slug = extract_info(url)
-            if user:
-                # We only need the counts and names here
-                _, title, count = get_list_metadata(user, slug)
-                if count > 0:
-                    list_data.append(
-                        {"user": user, "slug": slug, "title": title, "count": count}
-                    )
+            try:
+                user, slug = extract_info(url)
+                if user:
+                    # We only need the counts and names here
+                    _, title, count = get_list_metadata(user, slug)
+                    if count > 0:
+                        list_data.append(
+                            {"user": user, "slug": slug, "title": title, "count": count}
+                        )
+            except Exception as e:
+                print(f"DEBUG: Skipping invalid list {url} - {e}")
+                continue
+
+        if not list_data:
+            return jsonify({"error": "No valid movies found in provided lists"}), 404
 
         return jsonify(
             {"lists": list_data, "total": sum(item["count"] for item in list_data)}

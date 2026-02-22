@@ -70,8 +70,19 @@ export const performRandomize = async (urls) => {
             headers: { 'Content-Type': 'application/json' }, 
             body: JSON.stringify({ urls }) 
         });
+        
+        if (!metaRes.ok) {
+            const text = await metaRes.text();
+            let errorMessage = 'Metadata failed';
+            try { 
+                const errData = JSON.parse(text); 
+                errorMessage = errData.error || errorMessage;
+            } catch(e) { 
+                errorMessage = `Server Error (${metaRes.status})`; 
+            }
+            throw { userFacing: true, message: errorMessage };
+        }
         const metaData = await metaRes.json();
-        if (!metaRes.ok) throw { userFacing: true, message: metaData.error || 'Metadata failed' };
         
         // 2. Selection (Honest Progress)
         elements.slot.textContent = CONFIG.LOADING_MESSAGES[2];
@@ -80,8 +91,19 @@ export const performRandomize = async (urls) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ lists: metaData.lists, total: metaData.total })
         });
+        
+        if (!selectRes.ok) {
+            const text = await selectRes.text();
+            let errorMessage = 'Selection failed';
+            try { 
+                const errData = JSON.parse(text); 
+                errorMessage = errData.error || errorMessage;
+            } catch(e) { 
+                errorMessage = `Server Error (${selectRes.status})`; 
+            }
+            throw { userFacing: true, message: errorMessage };
+        }
         const selectData = await selectRes.json();
-        if (!selectRes.ok) throw { userFacing: true, message: selectData.error || 'Selection failed' };
         
         // 3. Details (Honest Progress)
         elements.slot.textContent = CONFIG.LOADING_MESSAGES[3];
@@ -90,8 +112,20 @@ export const performRandomize = async (urls) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ slug: selectData.meta.slug })
         });
+        
+        if (!detailRes.ok) {
+            const text = await detailRes.text();
+            let errorMessage = 'Details failed';
+            try { 
+                const errData = JSON.parse(text); 
+                errorMessage = errData.error || errorMessage;
+            } catch(e) { 
+                errorMessage = `Server Error (${detailRes.status})`; 
+            }
+            throw { userFacing: true, message: errorMessage };
+        }
         const detailData = await detailRes.json();
-        if (!detailRes.ok) throw { userFacing: true, message: detailData.error || 'Details failed' };
+
 
         // 4. Finalizing
         elements.slot.textContent = CONFIG.LOADING_MESSAGES[4];
