@@ -7,11 +7,11 @@ let urlCount = 1;
 
 // --- Loading Animation State ---
 const loadingMessages = [
-    "FETCHING LIST DATA",
-    "ANALYZING FILMS",
-    "SHUFFLING POOL",
-    "CONSULTING FATE",
-    "PREPARING PROJECTOR"
+    "CONNECTING TO LETTERBOXD",
+    "FETCHING LIST METADATA",
+    "CALCULATING WEIGHTED POOL",
+    "SCRAPING RANDOM PAGE",
+    "FINALIZING CANDIDATE"
 ];
 let bgIntervals = { slot: null, prg: null };
 
@@ -138,9 +138,11 @@ export const performRandomize = async (urls) => {
     elements.slot.textContent = loadingMessages[0];
     
     bgIntervals.slot = setInterval(() => {
-        msgIdx = (msgIdx + 1) % loadingMessages.length;
-        elements.slot.textContent = loadingMessages[msgIdx];
-    }, 400);
+        if (msgIdx < loadingMessages.length - 1) {
+            msgIdx++;
+            elements.slot.textContent = loadingMessages[msgIdx];
+        }
+    }, 800);
 
     bgIntervals.prg = setInterval(() => {
         if (p < 90) elements.bar.style.width = `${p += (100 - p) * 0.05}%`;
