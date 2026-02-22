@@ -4,14 +4,14 @@ from letterboxdpy.pages.movie_profile import MovieProfile
 from letterboxdpy.core.scraper import parse_url
 from letterboxdpy.utils.utils_url import get_page_url
 from letterboxdpy.utils.movies_extractor import extract_movies_from_vertical_list
+from letterboxdpy.constants.project import DOMAIN
 
 try:
     from .utils import progress_step
     from .constants import MOVIES_PER_PAGE
-except ImportError:
+except (ImportError, ValueError):
     from utils import progress_step
     from constants import MOVIES_PER_PAGE
-
 
 @progress_step("Fetching List Metadata")
 def get_list_metadata(user, slug):
@@ -22,11 +22,9 @@ def get_list_metadata(user, slug):
 @progress_step("Selecting Random Movie from List")
 def get_random_movie_meta(user, slug, count):
     """Fetches a random page from list and picks a movie slug"""
-    from letterboxdpy.constants.project import DOMAIN
     list_url = f"{DOMAIN}/{user}/list/{slug}"
     
     total_pages = math.ceil(count / MOVIES_PER_PAGE)
-
     random_page = random.randint(1, total_pages)
     page_dom = parse_url(get_page_url(list_url, random_page))
     
@@ -57,4 +55,3 @@ def get_random_from_instance(lb, count):
         return None
     
     return get_movie_details(meta['slug'])
-
