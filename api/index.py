@@ -1,15 +1,25 @@
+import sys, os
 from flask import Flask, request, jsonify
-import random, os
+import random
 
-# Try relative imports for Vercel / package context, 
-# fall back to direct imports for local script execution
-from utils import extract_info, get_error_msg
-from scraper import get_list_metadata, get_random_from_instance
-from constants import ROOT_DIR, PORT, DEFAULT_ENGINE, SERVER_TYPE
+# Add current directory to path for robust imports without __init__.py
+api_dir = os.path.dirname(os.path.abspath(__file__))
+if api_dir not in sys.path:
+    sys.path.append(api_dir)
 
+try:
+    from utils import extract_info, get_error_msg
+    from scraper import get_list_metadata, get_random_from_instance
+    from constants import ROOT_DIR, PORT, DEFAULT_ENGINE, SERVER_TYPE
+except ImportError:
+    # Fallback for different execution contexts
+    from .utils import extract_info, get_error_msg
+    from .scraper import get_list_metadata, get_random_from_instance
+    from .constants import ROOT_DIR, PORT, DEFAULT_ENGINE, SERVER_TYPE
 
 # Initialize Flask with the project root as the static folder
 app = Flask(__name__, static_folder=ROOT_DIR, static_url_path='')
+
 
 
 @app.route('/')
@@ -17,7 +27,9 @@ def index():
     return app.send_static_file('index.html')
 
 @app.route('/api/metadata', methods=['POST'])
+@app.route('/metadata', methods=['POST'])
 def api_metadata():
+
     try:
         urls = [u.strip() for u in (request.json or {}).get('urls', []) if u.strip()]
         if not urls: return jsonify({"error": "No URLs"}), 400
@@ -36,7 +48,9 @@ def api_metadata():
         return jsonify({"error": get_error_msg(e)}), 500
 
 @app.route('/api/select', methods=['POST'])
+@app.route('/select', methods=['POST'])
 def api_select():
+
     try:
         lists = request.json.get('lists', [])
         total = request.json.get('total', 0)
@@ -59,7 +73,9 @@ def api_select():
         return jsonify({"error": get_error_msg(e)}), 500
 
 @app.route('/api/details', methods=['POST'])
+@app.route('/details', methods=['POST'])
 def api_details():
+
     try:
         slug = request.json.get('slug')
         if not slug: return jsonify({"error": "No slug"}), 400
