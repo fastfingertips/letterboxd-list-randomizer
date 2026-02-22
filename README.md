@@ -7,12 +7,9 @@
 
 A simple web application to pick a random movie from Letterboxd lists.
 
-## Tech Stack
-- **Backend:** Flask (Python) + Letterboxdpy
-- **Frontend:** Vanilla JS + CSS (Glassmorphism)
-- **Deployment:** Vercel
 
 ## Local Development
+
 1. Install dependencies:
    ```bash
    pip install -r requirements.txt
